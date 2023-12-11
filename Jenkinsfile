@@ -6,13 +6,8 @@ pipeline {
 	stage('Remove Containers') {
             steps {
                 echo 'Remove Containers'
-		if [ -n "$(docker ps -f "name=db" -f "status=running" -q )" ] ; then docker rm -f db
-		fi
-		sleep 2
-
-		if [ -n "$(docker ps -f "name=web" -f "status=running" -q )" ] ; then docker rm -f web
-		fi
-		sleep 2
+                sh "docker rm -f db"
+		sh "docker rm -f web"
             }
         }
         stage('Build') {
