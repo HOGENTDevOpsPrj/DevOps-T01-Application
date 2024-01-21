@@ -1,17 +1,12 @@
-﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid mx-16">
+﻿<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
         <button class="navbar-toggler mt-1" type="button"  @onclick="ToggleNavMenu" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="@collapse navbar-collapse nav-flex-row" id="navbarNav">
-            <ul class="navbar-nav ml-4">
+            <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link ml-1" href="pricing">FORMULES</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="availability">BESCHIKBAARHEID</a>
+                    <a class="nav-link" href="availability">BESCHIKBAARHEID VERSIE2</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="extras">EXTRA'S</a>
@@ -19,36 +14,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">OVER BLANCHE</a>
                 </li>
-                @*<AuthorizeView>
-                    <Authorized>
-                        Hello, @context.User.Identity.Name!
-                        <li class="nav-item">
-                            <a class="nav-link" href="admin/reservations">
-                                RESERVATIES BEHEREN
-                            </a>
-                        </li>>
-                        <li class="nav-item">
-                            <a class="nav-link" href="admin/products">
-                                AANBOD AANPASSEN
-                            </a>
-                        </li>>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" @onclick="BeginSignOut">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                <span>log out</span>
-                            </a>
-                        </li>>
-                    </Authorized>
-                    <NotAuthorized>
-                        <li class="nav-item">
-                            <a class="nav-link" href="authentication/login">LOGIN
-                                <i class="fa-solid fa-right-to-bracket"></i>
-                                <span>log in</span>
-                            </a>
-                        </li>
-                    </NotAuthorized>
-                </AuthorizeView>*@
-
+                <li class="nav-item">
+                    <a class="nav-link" href="pricing">FORMULES</a>
+                </li>
             </ul>
         </div>
         <a class="navbar-brand" href="#">
@@ -57,10 +25,36 @@
     </div>
 </nav>
 
-@code {
-    [Inject] public NavigationManager Navigation { get; set; } = default!;
-    @*[Inject] public SignOutSessionStateManager SignOutManager { get; set; } = default!;*@
+@*<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Blanche</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
 
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </div>
+    </nav>
+</div>*@
+
+@code {
     private bool collapseNavMenu = true;
 
     private string? collapse => collapseNavMenu ? "collapse" : null;
@@ -69,10 +63,4 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-
-    @*private async Task BeginSignOut(MouseEventArgs args)
-    {
-        await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
-    }*@
 }

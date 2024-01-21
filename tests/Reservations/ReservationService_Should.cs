@@ -3,12 +3,15 @@ using Blanche.Domain.Reservations;
 using Blanche.Mappers.Reservations;
 using Blanche.Server;
 using Blanche.Server.Persistence;
+using Blanche.Server.Persistence.Repository;
 using Blanche.Server.Services.Reservations;
+using Blanche.Shared.Reservations;
 using Moq;
 using MockQueryable.Moq;
 using Shouldly;
 using tests.Fakers.Reservations;
 using Xunit.Abstractions;
+using Mappers.Reservations;
 
 namespace tests.Reservations;
 
@@ -16,14 +19,12 @@ public class ReservationService_Should
 {
     private readonly ITestOutputHelper _output;
     protected readonly IUnitOfWork _unitOfWork;
-    protected readonly ReservationItemService _reservationItemService;
-    protected readonly BlancheDbContext _dbContext;
+    protected readonly BlancheDbContext _dbContext = default!;
 
     public ReservationService_Should(ITestOutputHelper output)
     {
         _output = output;
         _unitOfWork = new UnitOfWork(_dbContext);
-        _reservationItemService = new ReservationItemService(_unitOfWork);
     }
 
     [Fact]
@@ -32,19 +33,18 @@ public class ReservationService_Should
         // Arrange
         Reservation reservation = new ReservationFaker();
         _output.WriteLine(JsonSerializer.Serialize(reservation, new JsonSerializerOptions { WriteIndented = true }));
-        var reservationDto = ReservationMapper.ReservationToReservationDto(reservation);
+        var reservationDto = ReservationMapperManual.MapToDto(reservation);
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        mockUnitOfWork.Setup(x => x.Beers.Update(reservation.TypeOfBeer));
-        mockUnitOfWork.Setup(x => x.Formulas.Update(reservation.Formula));
         mockUnitOfWork.Setup(x => x.Reservations.Add(reservation));
-        var reservationService = new ReservationService(mockUnitOfWork.Object, _reservationItemService);
+        var reservationService = new ReservationService(mockUnitOfWork.Object);
 
         // Act
         var result = await reservationService.CreateReservationAsync(reservationDto);
         _output.WriteLine(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
 
         // Assert
-        result.ShouldBeOfType<Guid>();
+        result.ShouldBeOfType<ReservationDto>();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class ReservationService_Should
         }; 
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         mockUnitOfWork.Setup(x => x.Reservations.Queryable()).Returns(fakeReservations.AsQueryable().BuildMock());
-        var reservationService = new ReservationService(mockUnitOfWork.Object, _reservationItemService);
+        var reservationService = new ReservationService(mockUnitOfWork.Object);
 
         // Act
         var result = await reservationService.GetAlreadyBookedDates();
@@ -87,7 +87,7 @@ public class ReservationService_Should
         };
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         mockUnitOfWork.Setup(x => x.Reservations.Queryable()).Returns(fakeReservations.AsQueryable().BuildMock());
-        var reservationService = new ReservationService(mockUnitOfWork.Object, _reservationItemService);
+        var reservationService = new ReservationService(mockUnitOfWork.Object);
 
         // Act
         var result = await reservationService.GetBookedByClientDates(customerId);

@@ -2,23 +2,26 @@
 using Ardalis.GuardClauses;
 using Blanche.Domain.Common;
 using Blanche.Domain.Products;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blanche.Domain.Reservations;
 
-public class ReservationItem : Entity
+public class ReservationItem : ValueObject
 {
-    public Guid ReservationId { get; set; }
-    public Guid? ProductId { get; set; }
-    public virtual Product? Product { get; set; }
-    public int Quantity { get; set; } = default!;
-    public double Price { get; set; } = default!;
+    [NotMapped]
+    public Product Product { get; } = default!;
+    public int Quantity { get; }
 
-    public ReservationItem() { }
+    private ReservationItem() { }
 
-    public ReservationItem(Product product, int quantity, double price)
+    public ReservationItem(Product product, int quantity)
     {
-        Product = product;
-        Quantity = Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-        Price = Guard.Against.NegativeOrZero(price, nameof(price));
+        Product = Guard.Against.Null(product, nameof(Product));
+        Quantity = Guard.Against.Negative(quantity, nameof(quantity));
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Product;
     }
 }

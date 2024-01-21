@@ -1,14 +1,12 @@
-﻿using Blanche.Domain.Products;
-using Blanche.Domain.Reservations;
+﻿using Blanche.Domain.Reservations;
 using tests.Fakers.Common;
 using tests.Fakers.Formulas;
-using tests.Fakers.Products;
 
 namespace tests.Fakers.Reservations
 {
     public class ReservationFaker : EntityFaker<Reservation>
     {
-        public static readonly IEnumerable<ReservationItem> items = new List<ReservationItem>();
+        public static readonly List<ReservationItem> items = new();
 
         public ReservationFaker(string locale = "nl") : base(locale)
         {
@@ -16,11 +14,10 @@ namespace tests.Fakers.Reservations
                 f.Date.Recent(0, DateTime.Today),
                 f.Date.Soon(2, DateTime.Today),
                 f.Random.Double(0, 300),
-                ReservationState.OFFER_SENT,
+                f.Random.Bool(),
                 f.Random.Int(40, 50),
                 new CustomerFaker(locale),
-                new FormulaFaker(locale), 
-                new BeerFaker(locale),
+                new FormulaFaker(locale),
                 items
             ));
         }

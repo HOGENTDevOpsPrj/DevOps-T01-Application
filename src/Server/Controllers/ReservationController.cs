@@ -1,6 +1,4 @@
-﻿using Blanche.Domain.Reservations;
-using Blanche.Server.Services.Util.Mail;
-using Blanche.Shared.Reservations; 
+﻿using Blanche.Shared.Reservations; 
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,27 +9,21 @@ namespace Blanche.Server.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
-        private readonly IEmailService _emailService;
 
-        public ReservationController(IReservationService reservationService,
-           IEmailService emailService )
+        public ReservationController(IReservationService reservationService)
         {
             _reservationService = reservationService;
-            _emailService = emailService;
         }
 
         [SwaggerOperation("Creates a new reservation.")]
         [HttpPost]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Guid> CreateReservationAsync(ReservationDto reservationDto)
+        public async Task<ReservationDto> CreateReservationAsync(ReservationDto reservationDto)
         {
             var reservation = await _reservationService.CreateReservationAsync(reservationDto);
-
-            await _emailService.SendReservationConfirmationMailAsync(reservationDto);
-
             return reservation!;
         }
 
@@ -44,18 +36,16 @@ namespace Blanche.Server.Controllers
         public async Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
         {
             var reservation = await _reservationService.UpdateReservationAsync(reservationDto);
-            
-
             return reservation!;
         }
 
-        [SwaggerOperation("Retrieves reservation by id.")]
+        [SwaggerOperation("Retrieves one or more reservations from a client.")]
         [HttpGet("{reservationId}")]
         [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ReservationDto> GetReservationsById(Guid reservationId)
+        public async Task<ReservationDto> GetReservationsByCustomerId(Guid reservationId)
         {
             var reservation = await _reservationService.GetReservationById(reservationId);
             return reservation;
@@ -67,9 +57,9 @@ namespace Blanche.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<List<ReservationDto>> GetReservations([FromQuery] ReservationState state)
+        public async Task<List<ReservationDto>> GetReservations()
         {
-            var reservations = await _reservationService.GetReservationsByState(state);
+            var reservations = await _reservationService.GetOpenReservations();
             return reservations;
         }
 
